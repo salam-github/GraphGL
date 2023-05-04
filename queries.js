@@ -3,7 +3,7 @@ import { queryFetch } from "./fetch";
 export async function getId(userId) {
     const data = await queryFetch(
         `
-        query getID($userId: String!) {
+        query getId($userId: String!) {
             user(where: {login: {_eq: $user}}) {
                 id,
                 login
@@ -12,7 +12,7 @@ export async function getId(userId) {
         `,
         {user: userId}
     );
-    return data.data.user[0]
+    return data.data.user[0];
 }
 
 export async function div01completeTasksID(username) {
@@ -21,7 +21,7 @@ export async function div01completeTasksID(username) {
     query getDiv01CompleteTasksID($username: String!) {
         user(where: {login: {_eq: $username}}) {
             login
-            progress(where: {_and: [{path: {_iregx: "div-01/(?!piscine.js.*/)"} _and: {path: {_iregx: "div-01/(?!rust)"}}}, {isDone: {_eq: true}}]}) {
+            progresses(where: {_and: [{path: {_iregex: "div-01/(?!piscine.js.*/)"} _and: {path: {_iregex: "div-01/(?!rust)"}}}, {isDone: {_eq: true}}]}) {
                 path
                 object{
                     id
