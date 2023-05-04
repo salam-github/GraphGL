@@ -36,7 +36,7 @@
 				if (response.ok) {
 					const data = await response.json();
 					localStorage.setItem('token', data.token);
-					window.location.replace('home.html');
+					window.location.assign('home.html');
 				} else {
 					throw new Error('Invalid credentials');
 				}
@@ -47,7 +47,7 @@
 
 		function logout() {
 			localStorage.removeItem('token');
-			window.location.replace('login.html');
+			window.location.assign('login.html');
 		}
 	</script>
 </body>

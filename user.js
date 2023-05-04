@@ -1,17 +1,17 @@
-import { div01completeTasksID } from "./queries";
+import { div01completeTasksID } from "./queries.js";
 
-export async function drawData(username, userID) {
+export async function drawData(userData, headers) {
     let loading = document.getElementById("loading");
     let loader = document.createElement("div");
     loader.classList.add("loader");
     loading.appendChild(loader);
-    await getData(username);
+    await getData(userData.login, headers);
     loading.removeChild(loader);
 
     let infoBox = document.getElementById("infoBox");
     let usernameBox = document.createElement("div");
     usernameBox.classList.add("usernameBox");
-    usernameBox.innerText = "Username"; " + username + \n" + "ID: " + userID;
+    usernameBox.innerText = "Username: " + userData.login + "\n" + "ID: " + userData.id;
     infoBox.appendChild(usernameBox);
 
     let xpBox = document.createElement("div");
@@ -23,9 +23,9 @@ export async function drawData(username, userID) {
 
     xpOverTime();
     xpByProject();
-
-
 }
+
+
 export let userData = {
     totalXp: 0,
     xpandDate: [],
@@ -46,9 +46,9 @@ function levelNeededXp(level) {
 let getData = async (username) => {
     let response = await div01completeTasksID(username);
     const completedTasks = response.data.user[0].progress;
-    for (let completedTasks of completedTasks) {
-        const taskID = completedTasks.object.id;
-        response = await div01taskXP(username, taskID);
+    for (let task of completedTasks) {
+      const taskID = task.object.id;
+      response = await div01taskXP(username, taskID);
 
         userData.xpandDate.push({
             xp: response.data.user[0].transactions[0].amount,
@@ -72,7 +72,7 @@ let getData = async (username) => {
     userData.xpandDate.sort((a, b) => a.date - b.date);
     userData.xpByProject.sort((a, b) => a.date - b.date);
     let lastXP = 0;
-    userdata.xpandDate.forEach((task) => {
+    userData.xpandDate.forEach((task) => {
         task.xp += lastXP;
         lastXP = task.xp;
     });
@@ -85,7 +85,7 @@ const xpOverTime = (_) => {
     charts.appendChild(xpOverTime);
     charts.appendChild(document.createElement("br"));
 
-    // set dimensions adn margins of graph
+    // set dimensions and margins of graph
     var margin = { top: 10, right: 30, bottom: 30, left: 60 },
         width = 460 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
@@ -190,7 +190,7 @@ const xpByProject = (_) => {
     .append("g")
     .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x));
-    .selectAll("text")
+    selectAll("text")
     .attr("transform", "translate(-10,0)rotate(-45)")
     .style("text-anchor", "end");
 
@@ -203,7 +203,7 @@ const xpByProject = (_) => {
     svg
     .append("g")
     .call(d3.axisLeft(y));
-    .append("text")
+    append("text")
     .attr("fill", "#000")
     .attr("transform", "rotate(-90)")
     .attr("y", 6)

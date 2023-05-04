@@ -1,5 +1,5 @@
 import { getId } from "./queries.js";
-//import { drawData, userData } from "./user.js";
+import { drawData, userData } from "./user.js";
 
 let loading = false;
 

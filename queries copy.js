@@ -1,33 +1,20 @@
 import { queryFetch } from "./fetch.js";
 
-export async function getUserInfo() {
+export async function getId(userId) {
     const data = await queryFetch(
-      `
-      query getUserInfo {
-        user(where: {login: {_eq: "USER_LOGIN"}}) {
-          id
-          login
-          xp
-          grades {
-            id
-            grade
-            cursus {
-              id
-              name
+        `
+        query getID($user: String!) {
+            user(where: {login: {_eq: $user}}) {
+                id,
+                login
             }
-          }
         }
-      }
-      `,
-      {},
-      localStorage.getItem("token") // Add token to headers
+        `,
+        {user: userId},
+        localStorage.getItem('token') // Add token to headers
     );
-    if (data.data.user.length > 0) {
-      return data.data.user[0];
-    } else {
-      return undefined;
-    }
-  }
+    return data.data.user[0];
+}
 
 export async function div01completeTasksID(username) {
     const data = await queryFetch(
