@@ -14,3 +14,5 @@ export async function queryFetch(query, variables) {
     );
     return await res.json();
 }
+
+// https://01.gritlab.ax/api/auth/signin
