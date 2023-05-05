@@ -1,6 +1,6 @@
 
-const limit = 50;
-const fetchUrl = 'https://01.gritlab.ax/api/graphql-engine/v1/graphql';
+// const limit = 50;
+// const fetchUrl = 'https://01.gritlab.ax/api/graphql-engine/v1/graphql';
 
 
 export async function queryFetch(query, variables) {

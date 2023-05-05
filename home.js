@@ -16,7 +16,7 @@ async function loadUserData() {
 
   try {
       const response = await queryFetch(query, variables);
-      const userData = response.data.user[0];
+      const userData = response.data.usern;
       userDataContainer.innerHTML = `
           <p>Name: ${userData.id}</p>
           <p>Email: ${userData.login}</p>
