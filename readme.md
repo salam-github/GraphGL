@@ -19,8 +19,8 @@ here is a link to the app: https://(((DOMAIN))).herokuapp.com/
 
 -----------------
 
-## instructions
-->
+## instructions -->
+
 You'll use the GraphQL endpoint which is provided by the platform (https://((DOMAIN))/api/graphql-engine/v1/graphql). You'll be able to query your own data to populate your profile page.
 
 So that you can access your data, you'll need to create a login page.
@@ -52,41 +52,3 @@ You must provide a method to log out.
 
 When making GraphQL queries, you'll supply the JWT using Bearer authentication. It will only allow access to the data belonging to the authenticated user.
 
-Here are a selection of interesting tables and columns which are exposed via GraphQL:
-
-user table:
-
-This table will have information about the user.
-
-id	login
-1	person1
-transaction table:
-
-This table will give you access to XP and through user table you can get to the audits ratio as well.
-
-id	type	amount	objectId	userId	createdAt	path
-1	xp	234	42	1	2021-07-26T13:04:02.301092+00:00	/madere/div-01/graphql
-2	xp	1700	2	1	2021-07-26T13:04:02.301092+00:00	/madere/div-01/graphql
-3	xp	175	64	1	2021-07-26T13:04:02.301092+00:00	/madere/div-01/graphql
-progress table:
-
-id	userId	objectId	grade	createdAt	updatedAt	path
-1	1	3001	1	2021-07-26T13:04:02.301092+00:00	2021-07-26T13:04:02.301092+00:00	/madere/piscine-go/quest-01
-2	1	198	0	2021-07-26T13:04:02.301092+00:00	2021-07-26T13:04:02.301092+00:00	/madere/piscine-go/quest-01
-3	1	177	1	2021-07-26T13:04:02.301092+00:00	2021-07-26T13:04:02.301092+00:00	/madere/piscine-go/quest-01
-result table:
-
-Both progress and result table will give you the student progression.
-
-id	objectId	userId	grade	type	createdAt	updatedAt	path
-1	3	1	0		2021-07-26T13:04:02.301092+00:00	2021-07-26T13:04:02.301092+00:00	/madere/div-01/graphql
-2	23	1	0		2021-07-26T13:04:02.301092+00:00	2021-07-26T13:04:02.301092+00:00	/madere/div-01/graphql
-3	41	1	1		2021-07-26T13:04:02.301092+00:00	2021-07-26T13:04:02.301092+00:00	/madere/div-01/graphql
-object table:
-
-This table will give you information about all objects (exercises/projects).
-
-id	name	type	attrs
-1	0	exercise	{}
-2	0	project	{}
-3	1	exercise	{}
