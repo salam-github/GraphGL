@@ -41,12 +41,13 @@ async function fetchCurrentUser() {
 `;
 //todo: get user xp
 const xpQuery = `
-  query ($userId: Int!) {
-    user_xp(where: {user_id: {_eq: $userId}}) {
+  query  {
+    user
       id
-      user_id
-      level
-      points
+      login
+      transaction {
+        amount
+      }
     }
   }
 `;
@@ -63,6 +64,17 @@ const xpQuery = `
     //print currentuser data to page
     //console.log('Result111:',currentUserresult["user"], "data",currentUserresult[0]);
     const user = currentUserresult["user"][0];
+
+    //get user xp data
+    // const xpResult = await queryFetch(xpQuery, {userId: user.id}, token);
+    // if (xpResult.errors) {
+    //   throw new Error(xpResult.errors[0].message);
+    // }
+
+    // const xp = xpResult["user_xp"][0];
+
+
+    
     const userDataElement = document.querySelector('#user-data');
     userDataElement.innerHTML = `
     <p>Welcome, ${user.login}!</p>
