@@ -12,7 +12,7 @@ export function setCookie(name, value, days) {
 }
 function getToken() {
     const cookieString = document.cookie;
-    console.log("Cookie string:", cookieString);
+    //console.log("Cookie string:", cookieString);
     const cookieArray = cookieString.split('; ');
     let token;
     cookieArray.forEach((cookie) => {
@@ -22,7 +22,7 @@ function getToken() {
       }
     });
   
-    console.log("Token from cookies:", token);
+   // console.log("Token from cookies:", token);
     return token;
   }
 
