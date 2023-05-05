@@ -1,6 +1,26 @@
-to do
-loginpage
 
+# Grit:Lab GraphQL
+-----------------
+## TODO
+- [x] get all necessary data from graphql(xp, audits, grades, skills, etc)
+- [x] separete quaries into another file that we can import
+- [x] Draw graphs
+- [x] use some CSS magic to make it look good
+- [x] host it on heroku/github pages/netlify
+- [x] ?????
+- [x] profit
+- [x] and look some some vurnerabilities
+-----------------
+
+-----------------
+## How to run 
+here is a link to the app: https://(((DOMAIN))).herokuapp.com/
+
+
+-----------------
+
+## instructions
+->
 You'll use the GraphQL endpoint which is provided by the platform (https://((DOMAIN))/api/graphql-engine/v1/graphql). You'll be able to query your own data to populate your profile page.
 
 So that you can access your data, you'll need to create a login page.
