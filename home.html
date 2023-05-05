@@ -14,16 +14,16 @@
     import { queryFetch } from './fetch.js';
 
 async function fetchCurrentUser() {
-const cookieString = document.cookie;
-console.log('Cookie string:', cookieString);
-const cookieArray = cookieString.split('; ');
-console.log('Cookie array:', cookieArray);
-let token;
-cookieArray.forEach((cookie) => {
-  const [name, value] = cookie.split('=');
-  if (name === 'token') {
-    token = value;
-  }
+    const cookieString = document.cookie;
+    console.log('Cookie string:', cookieString);
+    const cookieArray = cookieString.split('; ');
+    console.log('Cookie array:', cookieArray);
+    let token; 
+    cookieArray.forEach((cookie) => {
+        const [name, value] = cookie.split('=');
+        if (name === 'token') {
+        token = value;
+    }
 });
 console.log('Token from cookies:', token);
 
@@ -31,7 +31,7 @@ console.log('Token from cookies:', token);
     throw new Error('No token found in cookies');
   }
 
-  const query = `
+  const currentUser = `
     query {
         user {
             id
@@ -39,17 +39,28 @@ console.log('Token from cookies:', token);
         }
     }
 `;
+//todo: get user xp
+const xpQuery = `
+  query ($userId: Int!) {
+    user_xp(where: {user_id: {_eq: $userId}}) {
+      id
+      user_id
+      level
+      points
+    }
+  }
+`;
 
 
   try {
     console.log('Token before fetch:', token);
-    const result = await queryFetch(query, null, token);
+    const result = await queryFetch(currentUser, null, token);
     console.log('Result2:', result);
     if (result.errors) {
       throw new Error(result.errors[0].message);
     }
 
-    //print user data to page
+    //print currentuser data to page
     console.log('Result111:',result["user"], "data",result[0]);
     const user = result["user"][0];
     const userDataElement = document.querySelector('#user-data');
