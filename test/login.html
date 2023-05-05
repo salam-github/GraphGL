@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login Page</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<h2>Login</h2>
+	<form id="login-form">
+		<label for="username">Username or Email:</label><br>
+		<input type="text" id="username" name="username"><br>
+		<label for="password">Password:</label><br>
+		<input type="password" id="password" name="password"><br><br>
+		<input type="submit" value="Submit">
+	</form>
+	<div id="message"></div>
+	<script>
+		const loginForm = document.querySelector('#login-form');
+		const message = document.querySelector('#message');
+
+		loginForm.addEventListener('submit', async (event) => {
+			event.preventDefault();
+
+			const username = loginForm.username.value;
+			const password = loginForm.password.value;
+
+			try {
+				const response = await fetch('https://01.gritlab.ax/api/auth/signin', {
+					method: 'POST',
+					headers: {
+						'Authorization': 'Basic ' + btoa(username + ':' + password)
+					}
+				});
+
+				if (response.ok) {
+					const data = await response.json();
+					localStorage.setItem('token', data.token);
+					window.location.assign('home.html');
+				} else {
+					throw new Error('Invalid credentials');
+				}
+			} catch (error) {
+				message.innerHTML = error.message;
+			}
+		});
+
+		function logout() {
+			localStorage.removeItem('token');
+			window.location.assign('login.html');
+		}
+	</script>
+</body>
+</html>
