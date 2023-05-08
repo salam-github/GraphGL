@@ -12,9 +12,9 @@ export function init() {
   
     // add id fetch callback
       //resetUX()
-      clearGraph()
-      getUserData()
-      this.focus()
+      //clearGraph()
+      //getUserData()
+      //this.focus()
 
   }
 
@@ -167,24 +167,6 @@ async function getID() {
               item.value = value;
               statSelect.append(item);
             });
-            statsDom.innerHTML += `
-                  <tr>
-                  <td>${key} ${statSelect.outerHTML}:</td>
-                  <td><span id="skillLevel">${statSelect.children[0].value}</span></td>
-                  </tr>
-                  `;
-            document
-              .getElementById("statSelect")
-              .addEventListener("change", function () {
-                document.getElementById("skillLevel").textContent = this.value;
-              });
-          } else {
-            statsDom.innerHTML += `
-                  <tr>
-                      <td>${key}:</td>
-                      <td>${statText}</td>
-                  </tr>
-                  `;
           }
         });
 
@@ -360,21 +342,6 @@ async function getTx(e) {
     path.setAttribute("d", pathD);
   }
   
-  function clearGraph() {
-    const canvas = document.getElementById("canvas");
-    const circles = canvas.querySelectorAll("circle");
-    for (let j = circles.length - 1; j >= 0; j--) {
-      if (!circles[j].id) canvas.removeChild(circles[j]);
-    }
-    document.getElementById("tooltip").classList.add("hidden");
-    document.getElementById("indicator").setAttribute("fill", "transparent");
-    document.getElementById("tooltip-amount").textContent = "";
-    document.getElementById("tooltip-event").textContent = "";
-    document.getElementById("tooltip-date").textContent = "";
-    const path = document.getElementById("path");
-    path.setAttribute("d", "M5 75");
-    path.setAttribute("fill", "transparent")
-  }
   
 
 
