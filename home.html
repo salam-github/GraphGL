@@ -5,114 +5,33 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles/main.css">
+  <script type="module" src="main.js"></script>
 </head>
 <body>
-	<h2 id="Title">Home yabadabadooo</h2>
+	<h3 id="Title"></h3>
 	<div id="user-welcome"></div>
+  <div id="user-xp"></div>
+  <div class="btn-cell"> 
+    <div id="btnManager">
+      <button id="get-xp-btn" data-value="xp" data-order="createdAt">Click For project XP graph</button>
+      <button id="get-level-btn" data-value="level" data-order="amount">click for project level graph</button>
+    </div>
+  </div>
+  <br/>
 	<div id="error-message" style="color: red;"></div>
+  <div id="infoBoxes" ></div>
+  <br/>
+  <div id="charts"></div>
+  <div id="stats" ></div>
+  <div id="get-xp-btn" ></div>
+  <div id="get-level-btn" ></div>
+
+
 	<button id="logout-btn">Logout</button>
-	<script type="module">
-    import { queryFetch } from './fetch.js';
+  <script type="module" >
+    import{ init }from './main.js';
+    init();
 
-async function fetchCurrentUser() {
-    const cookieString = document.cookie;
-    //console.log('Cookie string:', cookieString);
-    const cookieArray = cookieString.split('; ');
-    //console.log('Cookie array:', cookieArray);
-    let token; 
-    cookieArray.forEach((cookie) => {
-        const [name, value] = cookie.split('=');
-        if (name === 'token') {
-        token = value;
-    }
-});
-//console.log('Token from cookies:', token);
-
-  if (!token) {
-    throw new Error('No token found in cookies');
-  }
-
-  const currentUser = `
-    query {
-        user {
-            id
-            login
-        }
-    }
-`;
-//todo: get user xp
-const xpQuery = `
-  query  {
-    user
-      id
-      login
-      transaction {
-        amount
-      }
-    }
-  }
-`;
-
-
-  try {
-    //console.log('Token before fetch:', token);
-    const currentUserresult = await queryFetch(currentUser, null, token);
-    //console.log('Result2:', currentUserresult);
-    if (currentUserresult.errors) {
-      throw new Error(currentUserresult.errors[0].message);
-    }
-
-    //print currentuser data to page
-    //console.log('Result111:',currentUserresult["user"], "data",currentUserresult[0]);
-    const user = currentUserresult["user"][0];
-
-    //get user xp data
-    // const xpResult = await queryFetch(xpQuery, {userId: user.id}, token);
-    // if (xpResult.errors) {
-    //   throw new Error(xpResult.errors[0].message);
-    // }
-
-    // const xp = xpResult["user_xp"][0];
-
-
-    
-    const userDataElement = document.querySelector('#user-welcome');
-    userDataElement.innerHTML = `
-    <p>Welcome, ${user.login}!</p>
-    <p>Your ID is ${user.id} and your XP is.</p>
-    `;
-
-
-  } catch (error) {
-    console.error(error);
-    const errorMessageElement = document.querySelector('#error-message');
-    errorMessageElement.textContent = error.message;
-  }
-}
-
-const logoutBtn = document.getElementById('logout-btn');
-logoutBtn.addEventListener('click', () => {
-logout();
-});
-
-async function logout() {
-	try {
-		await fetch('https://01.gritlab.ax/api/auth/signout', {
-			method: 'POST',
-			headers: {
-				'Authorization': `Bearer ${localStorage.getItem('token')}`
-			}
-		});
-	} catch (error) {
-		console.error(error);
-		} finally {
-              document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-			localStorage.removeItem('token');
-			window.location.assign('login.html');
-		}
-}
-
-	fetchCurrentUser();
-	</script>
+  </script>
 </body>
 </html>

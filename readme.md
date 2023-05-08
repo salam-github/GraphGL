@@ -52,3 +52,20 @@ You must provide a method to log out.
 
 When making GraphQL queries, you'll supply the **JWT** using **Bearer** authentication. It will only allow access to the data belonging to the authenticated user.
 
+     GetStats--->   id
+        login
+        transactions (
+            order_by:{createdAt:desc}
+            offset:${offset}
+        )
+        {
+            amount
+            type
+            path
+            object {
+                type
+                name
+            }
+        }
+
+

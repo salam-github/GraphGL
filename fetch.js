@@ -48,8 +48,10 @@ function getToken() {
     console.log("Response:", res);
     const result = await res.json();
     console.log("Result:", result);
+    const errorMessageElement = document.querySelector('#error-message');
     if (result.errors) {
       throw new Error(result.errors[0].message);
+      errorMessageElement.textContent = result.errors[0].message;
     }
     if (!result.data) {
       throw new Error('No data found in response');
@@ -61,3 +63,9 @@ function getToken() {
 // https://01.gritlab.ax/api/auth/signin
 
 // Define your GraphQL query
+
+// } catch (error) {
+//   console.error(error);
+//   const errorMessageElement = document.querySelector('#error-message');
+//   errorMessageElement.textContent = error.message;
+// }
