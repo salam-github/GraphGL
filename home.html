@@ -4,10 +4,11 @@
 	<title>Home Page</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-	<h2>Home</h2>
-	<div id="user-data"></div>
+	<h2 id="Title">Home yabadabadooo</h2>
+	<div id="user-welcome"></div>
 	<div id="error-message" style="color: red;"></div>
 	<button id="logout-btn">Logout</button>
 	<script type="module">
@@ -75,7 +76,7 @@ const xpQuery = `
 
 
     
-    const userDataElement = document.querySelector('#user-data');
+    const userDataElement = document.querySelector('#user-welcome');
     userDataElement.innerHTML = `
     <p>Welcome, ${user.login}!</p>
     <p>Your ID is ${user.id} and your XP is.</p>
