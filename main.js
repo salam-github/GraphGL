@@ -9,6 +9,7 @@ export function init() {
     // get basic user data
     getID();
     getStat();
+    //getTx();
   
     // add id fetch callback
       //resetUX()
@@ -176,62 +177,21 @@ async function getID() {
 export async function completedTasks(username) {
     const data = await queryFetch(`
     query completedTasks {
-        user {
-          login
-          progresses   {
-            path
-            object {
-              id
-            }
-          }
+        transaction (order_by:{createdAt:desc} ){
+        amount
+        type
+        path
+        object{
+          type
+          name
         }
       }
+      
+    }
     `);
  
 
 }
-async function getTx(e) {
-    e.preventDefault();
-  
-    const valueType = e.target.dataset.value;
-    const orderType = e.target.dataset.order;
-    const projType = "project";
-    const xpCorrection = valueType === "xp" ? `{amount:{_gte:5000}}` : ``;
-    const txParam = `
-      transactions (
-          where:{
-          _and:[
-              {type:{_eq:"${valueType}"}}
-              {path:{_gt:"/gritlab/school-curriculum/"}}
-              {object:{type:{_eq:"${projType}"}}}
-              ${xpCorrection}
-              ]
-          }
-          order_by:{${orderType}:desc}
-          offset: 0
-      )
-      `;
-    const txReturnValues = `
-      {
-          createdAt
-          amount
-          type
-          path
-          object {
-              name
-              type
-          }
-      }
-      `;
-    const fragment = `
-      fragment getData on user {
-          login
-          ${txParam}
-          ${txReturnValues}
-      }`;
-  
-
-  }
   
   async function drawGraph(tx, type) {
     if (!tx.length) {
