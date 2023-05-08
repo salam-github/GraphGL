@@ -1,7 +1,3 @@
-
-// const limit = 50;
-// const fetchUrl = 'https://01.gritlab.ax/api/graphql-engine/v1/graphql';
-
 export function setCookie(name, value, days) {
     const date = new Date();
     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -46,11 +42,16 @@ function getToken() {
       }
     );
     console.log("Response:", res);
-    const result = await res.json();
+    let result;
+    try {
+      result = await res.json();
+    } catch (error) {
+      result = await res.text();
+    }
     console.log("Result:", result);
     const errorMessageElement = document.querySelector('#error-message');
     if (result.errors) {
-      throw new Error(result.errors[0].message);
+      throw new Error('No data found in response. Query:', query, 'Variables:', variables);
       errorMessageElement.textContent = result.errors[0].message;
     }
     if (!result.data) {
@@ -58,6 +59,7 @@ function getToken() {
     }
     return result.data;
   }
+  
   
 
 // https://01.gritlab.ax/api/auth/signin
@@ -69,3 +71,6 @@ function getToken() {
 //   const errorMessageElement = document.querySelector('#error-message');
 //   errorMessageElement.textContent = error.message;
 // }
+
+// const limit = 50;
+// const fetchUrl = 'https://01.gritlab.ax/api/graphql-engine/v1/graphql';

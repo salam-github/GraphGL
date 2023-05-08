@@ -10,15 +10,10 @@ export function init() {
     getID();
     getStat();
   
-    // get Tx btn
-    const btnManager = document.getElementById("btnManager");
-    btnManager.addEventListener("click", getTx);
-  
     // add id fetch callback
       //resetUX()
       clearGraph()
       getUserData()
-      getStat()
       this.focus()
 
   }
@@ -83,28 +78,6 @@ async function getID() {
           }
       }
       `;
-  
-    await queryFetch( {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({ query: `${fetch}${fragment}` }),
-    })
-      .then((resp) => resp.json())
-      .then((json) => {
-        if (json.error || !json.data.user.transactions.length) throw new Error(`cannot access to user ${variables.uid}`)
-  
-        tx = tx.concat(json.data.user.transactions);
-        if (json.data.user.transactions.length === limit) {
-          getStat(tx, tx.length);
-        } else {
-          return tx;
-        }
-      })
-      .then((tx) => {
-        if (!tx) return;
   
         // cache all stats to stats Map
         const stats = new Map();
@@ -214,11 +187,7 @@ async function getID() {
                   `;
           }
         });
-      }).catch(e => {
-        document.getElementById("stats").innerHTML = e.message.includes("cannot access to user") ? e.message : "user does not exist"
-        document.getElementById("get-xp-btn").disabled = true
-        document.getElementById("get-level-btn").disabled = true
-      })
+
   }
 
 // progresses (where: {_and: [{path: {_iregex: "div-01/(?!piscine-js.*/)"} _and: {path: {_iregex: "div-01/(?!rust)"}}}, {isDone: {_eq: true}}]})
@@ -279,20 +248,7 @@ async function getTx(e) {
           ${txReturnValues}
       }`;
   
-    await fetch(fetchURL, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({ query: `${query}${fragment}`, variables }),
-    })
-      .then((resp) => resp.json())
-      .then((json) => {
-        const graphqlResult = document.getElementById("graphqlResult");
-        graphqlResult.innerHTML = `${json.data.user.login}'s project ${valueType} progress (last ${json.data.user.transactions.length} changes)`;
-        drawGraph(json.data.user.transactions, valueType);
-      });
+
   }
   
   async function drawGraph(tx, type) {
@@ -461,4 +417,4 @@ async function getTx(e) {
   
       //getID();
     //   getStat();
-      //completedTasks();
+      completedTasks();
