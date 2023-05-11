@@ -63,10 +63,10 @@ export function init() {
         <h3>Progress report for ${user.login}<h3>
       `;
   
-      const div01CompletedTasksIDResult = await div01CompletedTasksID;
+      const taskIDResult = await div01CompletedTasksID;
   
-      if (div01CompletedTasksIDResult.errors) {
-        throw new Error(div01CompletedTasksIDResult.errors[0].message);
+      if (taskIDResult.errors) {
+        throw new Error(taskIDResult.errors[0].message);
       }
   
       const taskIDs = taskIDResult.data.progress.map(task => task.object.id);
