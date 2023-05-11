@@ -27,6 +27,7 @@ function getToken() {
     if (!token) {
       throw new Error('No token found in cookies');
     }
+  
     const res = await fetch(
       'https://01.gritlab.ax/api/graphql-engine/v1/graphql',
       {
@@ -41,24 +42,31 @@ function getToken() {
         }),
       }
     );
-    console.log("Response:", res);
+  
     let result;
     try {
       result = await res.json();
     } catch (error) {
       result = await res.text();
     }
+  
     console.log("Result:", result);
+  
     const errorMessageElement = document.querySelector('#error-message');
+  
     if (result.errors) {
-      throw new Error('No data found in response. Query:', query, 'Variables:', variables);
       errorMessageElement.textContent = result.errors[0].message;
+      const errorMessage = `No data found in response. Query: ${query}. Variables: ${JSON.stringify(variables)}`;
+      throw new Error(errorMessage);
     }
+  
     if (!result.data) {
       throw new Error('No data found in response');
     }
+  
     return result.data;
   }
+  
   
   
 

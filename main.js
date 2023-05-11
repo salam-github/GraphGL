@@ -1,5 +1,5 @@
 import { queryFetch } from './fetch.js';
-//import { drawData, userData } from './drawdata.js';
+import { div01CompletedTasksID, div01TaskXP } from "./queries.js";
 
 
 //await drawData()
@@ -8,8 +8,10 @@ import { queryFetch } from './fetch.js';
 export function init() {
     // get basic user data
     getID();
-    getStat();
-    //getTx();
+    //drawData()
+    //getStat()
+
+
   
     // add id fetch callback
       //resetUX()
@@ -19,298 +21,370 @@ export function init() {
 
   }
 
-async function getID() {
-      const currentUser = `
+  async function getID() {
+    const currentUser = `
+    query {
+        user {
+            id
+            login
+        }
+    }
+`;
+    const div01CompletedTasksID = `
       query {
-          user {
-              id
-              login
+        progress {
+          object {
+            id
           }
+        }
       }
-  `;
+    `;
   
     try {
-      //console.log('Token before fetch:', token);
-      const currentUserresult = await queryFetch(currentUser);
-      //console.log('Result2:', currentUserresult);
-      if (currentUserresult.errors) {
-        throw new Error(currentUserresult.errors[0].message);
+      const currentUserResult = await queryFetch(currentUser);
+      const userLogin = currentUserResult.user[0]; // Extract the login name from the query result
+      const taskID = await queryFetch(div01CompletedTasksID);
+      const response = await div01TaskXP(userLogin, taskID);
+      console.log(response);
+  
+      if (currentUserResult.errors) {
+        throw new Error(currentUserResult.errors[0].message);
       }
   
-      //print currentuser data to page
-      //console.log('Result111:',currentUserresult["user"], "data",currentUserresult[0]);
-      const user = currentUserresult["user"][0];
-      const userwelcomeElement = document.querySelector('#user-welcome');
-      userwelcomeElement.innerHTML = `
-      <p>Welcome, ${user.login}!</p>
-      <p>Your school ID is ${user.id}.</p>
-      `;      
-      const TitleElement = document.querySelector('#Title');
-      TitleElement.innerHTML = `
-      <h3>Progress report for ${user.login}<h3>
+      const user = currentUserResult.user[0];
+      const userWelcomeElement = document.querySelector('#user-welcome');
+      userWelcomeElement.innerHTML = `
+        <p>Welcome, ${user.login}!</p>
+        <p>Your school ID is ${user.id}.</p>
       `;
   
+      const titleElement = document.querySelector('#Title');
+      titleElement.innerHTML = `
+        <h3>Progress report for ${user.login}<h3>
+      `;
   
+      const div01CompletedTasksIDResult = await div01CompletedTasksID;
+  
+      if (div01CompletedTasksIDResult.errors) {
+        throw new Error(div01CompletedTasksIDResult.errors[0].message);
+      }
+  
+      const taskIDs = taskIDResult.data.progress.map(task => task.object.id);
+  
+      for (const taskID of taskIDs) {
+        const div01TaskXPResult = await div01TaskXP(user.login, taskID);
+        if (div01TaskXPResult.errors) {
+          throw new Error(div01TaskXPResult.errors[0].message);
+        }
+        const task = div01TaskXPResult.transaction[0];
+        const taskElement = document.createElement('li');
+        taskElement.textContent = `${task.object.name} - ${task.amount} XP`;
+        const taskListElement = document.querySelector('#task-list');
+        taskListElement.appendChild(taskElement);
+      }
+  
+      // Pass the transactions array to getStat function
+      //getStat(user.transactions, user.login, user.id);
+      getData(user.login, userData);
+      drawData(user.login, user.id);
+      //getStat(user.transactions, user.login, user.id);
     } catch (error) {
       console.error(error);
       const errorMessageElement = document.querySelector('#error-message');
       errorMessageElement.textContent = error.message;
     }
   }
-
-  //xp query
-  async function getStat(tx = [], offset = 0) {
-    const fragment = `
-      fragment getData on user {
-          id
-          login
-          transactions (
-              order_by:{createdAt:desc}
-              offset:${offset}
-          )
-          {
-              amount
-              type
-              path
-              object {
-                  type
-                  name
-              }
-          }
-      }
-      `;
   
-        // cache all stats to stats Map
-        const stats = new Map();
-        const ups = tx
-          .filter((entry) => entry.type === "up")
-          .reduce((acc, cur) => acc + cur.amount, 0);
-        const downs = tx
-          .filter((entry) => entry.type === "down")
-          .reduce((acc, cur) => acc + cur.amount, 0);
-        stats.set("Audit ratio", ups / downs);
-        stats.set(
-          "School-curriculum XP",
-          tx
-            .filter((entry) => {
-              if (
-                (entry.amount >= 5000 &&
-                  entry.type === "xp" &&
-                  !(entry.object.type === "exercise") &&
-                  entry.path.startsWith("/gritlab/school-curriculum")) ||
-                (entry.path.includes("checkpoint") && entry.type === "xp")
-              ) {
-                return true;
-              }
-            })
-            .reduce((acc, cur) => acc + cur.amount, 0)
-        );
-        stats.set(
-          "Piscine-go XP",
-          tx
-            .filter((entry) => {
-              if (
-                entry.type === "xp" &&
-                entry.path.startsWith("/gritlab/piscine-go")
-              ) {
-                return true;
-              }
-            })
-            .reduce((acc, cur) => acc + cur.amount, 0)
-        );
-        stats.set(
-          "Piscine-js XP",
-          tx
-            .filter((entry) => {
-              if (
-                entry.type === "xp" &&
-                entry.path.startsWith("/gritlab/school-curriculum/piscine-js/")
-              ) {
-                return true;
-              }
-            })
-            .reduce((acc, cur) => acc + cur.amount, 0)
-        );
-        stats.set(
-          "School-curriculum level",
-          tx.filter(entry => entry.type === "level" && entry.object.type === "project")?.reduce((max, cur) => max = cur.amount > max.amount ? cur : max, { amount: 0 })?.amount
-        );
-        console.log()
-        stats.set(
-          "Piscine-go level",
-          tx.filter((entry) => entry.type === "level" && entry.path.startsWith("/gritlab/piscine-go"))?.reduce((max, cur) => max = cur.amount > max.amount ? cur : max, { amount: 0 })?.amount
-        );
-        stats.set(
-          "Piscine-js level",
-          tx.filter((entry) => entry.type === "level" && entry.path.startsWith("/gritlab/school-curriculum/piscine-js/"))?.reduce((max, cur) => max = cur.amount > max.amount ? cur : max, { amount: 0 })?.amount,
-        );
-        const skills = new Map();
-        tx.filter((entry) => entry.type.includes("skill")).map((entry) => {
-          const skill = entry.type.split("_")[1];
-          skills.has(skill)
-            ? skills.set(skill, Math.max(entry.amount, skills.get(skill)))
-            : skills.set(skill, entry.amount);
-        });
-        stats.set("Skills", skills);
-        // make DOM element
-        const statsDom = document.getElementById("stats");
-        statsDom.innerHTML = ""
-        stats.forEach((stat, key) => {
-          if (!stat) return
-          let statText =
-            Number.isFinite(stat) && stat < 1 ? stat.toFixed(2) : stat;
-          if (Object.getPrototypeOf(stat) === Map.prototype) {
-            const statSelect = document.createElement("select");
-            statSelect.id = "statSelect";
-            stat.forEach((value, skill) => {
-              const item = document.createElement("option");
-              item.textContent = skill;
-              item.value = value;
-              statSelect.append(item);
-            });
-          }
-        });
+  
+  
 
+  //example of how to use the data
+  function getStat(transactions, login, id) {
+    //Do something with the transactions, login, and id
+    //console.log(transactions);
+    console.log(login);
+    console.log(id);
+    // console.log('Function 1:');
+    // console.log(loginName);
+    // console.log(userID);
   }
 
-// progresses (where: {_and: [{path: {_iregex: "div-01/(?!piscine-js.*/)"} _and: {path: {_iregex: "div-01/(?!rust)"}}}, {isDone: {_eq: true}}]})
-export async function completedTasks(username) {
-    const data = await queryFetch(`
-    query completedTasks {
-        transaction (order_by:{createdAt:desc} ){
-        amount
-        type
-        path
-        object{
-          type
-          name
-        }
-      }
-      
-    }
-    `);
- 
+export async function drawData(login, id) {
+	// let loading = document.getElementById("loading");
+	// let loader = document.createElement("div");
+	// loader.classList.add("loader");
+	// loading.appendChild(loader);
+	//await getData(login);
 
+	let infoBoxes = document.getElementById("infoBoxes");
+	let usernameBox = document.createElement("div");
+	usernameBox.classList.add("box");
+	usernameBox.innerText = "Username: " + login + "\n" + "ID: " + id;
+	infoBoxes.appendChild(usernameBox);
+
+	let xpBox = document.createElement("div");
+	xpBox.classList.add("box");
+	let lvl = calculateLevel(userData.totalXp);
+	xpBox.innerText =
+		"Level: " +
+		lvl +
+		"\n" +
+		"XP: " +
+		Math.round(userData.totalXp / 1000) +
+		"kB";
+	infoBoxes.appendChild(xpBox);
+
+	xpOverTimeChart();
+	xpByProjectChart();
 }
-  
-  async function drawGraph(tx, type) {
-    if (!tx.length) {
-      alert(`user ${variables.uid} does not have ${type} progress`)
-      return
+
+export let userData = { 
+    totalXp: 0,
+    xpAndDate: [],
+    xpByProject: [],
+
+};
+
+function calculateLevel(xp) {
+	let level = 0;
+
+	while (levelNeededXP(++level) < xp) {}
+
+	return level - 1;
+}
+
+
+function levelNeededXP(level) {
+	return Math.round(level * (176 + 3 * level * (47 + 11 * level)));
+}
+
+// const user = currentUserResult.user[0];
+// const userWelcomeElement = document.querySelector('#user-welcome');
+// userWelcomeElement.innerHTML = `
+//   <p>Welcome, ${user.login}!</p>
+//   <p>Your school ID is ${user.id}.</p>
+// `;
+
+
+let getData = async (login, userData) => {
+  try {
+    let response = await div01CompletedTasksID();
+    console.log('Completed Tasks Response:', response); // Log the response object for debugging purposes
+
+    if (!response || !response.progress || response.progress.length === 0) {
+      console.error('Invalid response data:', response); // Log the response data for debugging purposes
+      throw new Error('Invalid response data');
     }
-    // graph config
-    const canvas = document.getElementById("canvas");
-    const canvasWidth = 90;
-    const canvasHeight = 70;
-  
-    // set tooltip pos
-    const tooltip = document.getElementById("tooltip");
-    const canvasPos = canvas.getBoundingClientRect()
-    tooltip.style.top = canvasPos.top + 10 + "px"
-    tooltip.style.left = canvasPos.left + 40 + "px"
-      
-    // calculate time lapse and stat
-    const firstDate = new Date(tx.at(-1).createdAt);
-    const lastDate = new Date(tx.at(0).createdAt);
-    const timeLapse = Date.parse(lastDate) - Date.parse(firstDate);
-    const entries = tx.length;
-    const maxValue =
-      type === "xp"
-        ? tx.reduce((acc, cur) => acc + cur.amount, 0)
-        : tx.at(0).amount;
-  
-    // update axis text
-    const xAxisText = document.getElementById("xAxisText");
-    const yAxisText = document.getElementById("yAxisText");
-    xAxisText.textContent = `${firstDate.getDate()}/${firstDate.getMonth()}/${firstDate.getFullYear()} to ${lastDate.getDate()}/${lastDate.getMonth()}/${lastDate.getFullYear()} `;
-    yAxisText.textContent = `0 to ${maxValue} ${type}`;
-  
-    // initialize path
-    const path = document.getElementById("path");
-    path.setAttribute("d", "M5 75");
-    let pathD = path.getAttribute("d");
-    let pathX = 5;
-    let pathY = canvasHeight + 5;
-  
-    // clean last graph cache
-    clearGraph();
-  
-    for (let i = entries - 1; i >= 0; i--) {
-      if (i === entries - 1) {
-        pathX = 5;
-        pathY = canvasHeight + 5;
-      } else if (i === 0) {
-        // put last tx at the top right
-        pathX = canvasWidth + 5;
-        pathY = 5;
-      } else {
-        // otherwise put them proportionally to time
-        const xIncrement =
-          canvasWidth *
-          ((Date.parse(tx[i + 1].createdAt) - Date.parse(tx[i].createdAt)) /
-            timeLapse);
-        const yIncrement =
-          type === "level"
-            ? canvasHeight / entries
-            : (tx.at(i).amount / maxValue) * canvasHeight;
-        pathX -= xIncrement;
-        pathY -= yIncrement;
+
+    const progress = response.progress;
+    console.log('Progress:', progress); // Log the progress array for debugging purposes
+
+    const completedTasks = progress.map(task => task.object.id);
+    console.log('Completed Tasks:', completedTasks); // Log the completed tasks array for debugging purposes
+
+    for (let completedTask of completedTasks) {
+      const taskID = completedTask;
+      response = await div01TaskXP(login, taskID);
+      console.log('Task XP Response:', response); // Log the response object for debugging purposes
+
+      if (
+        !response.data ||
+        !response.data.user ||
+        !response.data.user[0].transactions ||
+        response.data.user[0].transactions.length === 0
+      ) {
+        throw new Error('Invalid response data');
       }
-      pathD += ` L${pathX} ${pathY}`;
-      const circle = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "circle"
-      );
-      circle.setAttribute("cx", pathX);
-      circle.setAttribute("cy", pathY);
-      circle.setAttribute("r", "0.5");
-      circle.setAttribute("fill", "lightblack");
-      canvas.append(circle);
-  
-      const division = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "circle"
-      );
-      division.setAttribute("cx", pathX);
-      division.setAttribute("cy", pathY);
-      division.setAttribute("r", "3");
-      division.setAttribute("fill", "transparent");
-      division.dataset.xPos = pathX;
-      division.dataset.yPos = pathY;
-      canvas.append(division);
-  
-      division.addEventListener("mouseover", function (e) {
-        const indicator = document.getElementById("indicator");
-        indicator.setAttribute("cx", e.target.dataset.xPos);
-        indicator.setAttribute("cy", e.target.dataset.yPos);
-        indicator.setAttribute("fill", "black");
-  
-        tooltip.classList.remove("hidden");
-        document.getElementById("tooltip-amount").innerHTML = `${type}: ${tx.at(i).amount
-          }`;
-        document.getElementById("tooltip-event").innerHTML = tx.at(i).object.name;
-        document.getElementById("tooltip-date").innerHTML = new Date(
-          tx.at(i).createdAt
-        ).toDateString();
+
+      userData.xpAndDate.push({
+        xp: response.data.user[0].transactions[0].amount,
+        date: new Date(
+          response.data.user[0].transactions[0].createdAt.substr(0, 10)
+        ),
       });
-      canvas.append(division);
+
+      userData.xpByProject.push({
+        xp: response.data.user[0].transactions[0].amount,
+        project: response.data.user[0].transactions[0].object.name,
+        date: new Date(
+          response.data.user[0].transactions[0].createdAt.substr(0, 10)
+        ),
+      });
+
+      const taskXP = response.data.user[0].transactions[0].amount;
+      userData.totalXp += taskXP;
     }
-    if (type === "xp") {
-      pathD += ` L95 75`
-      path.setAttribute("fill", "darkgrey")
-    }
-    path.setAttribute("d", pathD);
+
+    userData.xpAndDate.sort((a, b) => a.date - b.date);
+    userData.xpByProject.sort((a, b) => a.date - b.date);
+    let lastXp = 0;
+    userData.xpAndDate.forEach((task) => {
+      task.xp += lastXp;
+      lastXp = task.xp;
+    });
+  } catch (error) {
+    console.error(error);
+    const errorMessageElement = document.querySelector('#error-message');
+    errorMessageElement.textContent = error.message;
   }
+};
+
+
+
+
+
+
+
+
+const xpOverTimeChart = (_) => {
+	let charts = document.getElementById("graphs");
+	let chart = document.createElement("div");
+	chart.setAttribute("id", "chart1");
+	charts.appendChild(chart);
+	charts.appendChild(document.createElement("br"));
+
+	// set the dimensions and margins of the graph
+	var margin = { top: 10, right: 30, bottom: 30, left: 60 },
+		width = 800 - margin.left - margin.right,
+		height = 600 - margin.top - margin.bottom;
+
+	// append the svg object to the body of the page
+	var svg = d3
+		.select("#chart1")
+		.append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+		.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	// Add X axis --> it is a date format
+	var x = d3
+		.scaleTime()
+		.domain(
+			d3.extent(userData.xpAndDate, function (d) {
+				return d.date;
+			})
+		)
+		.range([0, width]);
+	svg
+		.append("g")
+		.attr("transform", "translate(0," + height + ")")
+		.call(d3.axisBottom(x));
+
+	// Add Y axis
+	var y = d3
+		.scaleLinear()
+		.domain([
+			0,
+			d3.max(userData.xpAndDate, function (d) {
+				return +d.xp;
+			}),
+		])
+		.range([height, 0]);
+	svg
+		.append("g")
+		.call(d3.axisLeft(y))
+		.append("text")
+		.attr("fill", "#000")
+		.attr("transform", "rotate(-90)")
+		.attr("y", 6)
+		.attr("dy", "0.71em")
+		.attr("text-anchor", "end")
+		.text("TOTAL XP");
+
+	// Add the line
+	svg
+		.append("path")
+		.datum(userData.xpAndDate)
+		.attr("fill", "none")
+		.attr("stroke", "#0b7dda")
+		.attr("stroke-width", 5)
+		.attr(
+			"d",
+			d3
+				.line()
+				.x(function (d) {
+					return x(d.date);
+				})
+				.y(function (d) {
+					return y(d.xp);
+				})
+		);
+};
+
+const xpByProjectChart = (_) => {
+	let charts = document.getElementById("graphs");
+	let chart = document.createElement("div");
+	chart.setAttribute("id", "chart2");
+	charts.appendChild(chart);
+
+	// set the dimensions and margins of the graph
+	var margin = { top: 30, right: 30, bottom: 130, left: 60 },
+		width = 800 - margin.left - margin.right,
+		height = 600 - margin.top - margin.bottom;
+
+	// append the svg object to the body of the page
+	var svg = d3
+		.select("#chart2")
+		.append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+		.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	// X axis
+	var x = d3
+		.scaleBand()
+		.range([0, width])
+		.domain(
+			userData.xpByProject.map(function (d) {
+				return d.project;
+			})
+		)
+		.padding(0.2);
+	svg
+		.append("g")
+		.attr("transform", "translate(0," + height + ")")
+		.call(d3.axisBottom(x))
+		.selectAll("text")
+		.attr("transform", "translate(-10,0)rotate(-45)")
+		.style("text-anchor", "end");
+
+	// Add Y axis
+	var y = d3
+		.scaleLinear()
+		.domain([0, Math.max(...userData.xpByProject.map((o) => o.xp)) + 5000])
+		.range([height, 0]);
+	svg
+		.append("g")
+		.call(d3.axisLeft(y))
+		.append("text")
+		.attr("fill", "#000")
+		.attr("transform", "rotate(-90)")
+		.attr("y", 6)
+		.attr("dy", "0.71em")
+		.attr("text-anchor", "end")
+		.text("PROJECT XP");
+
+	// Bars
+	svg
+		.selectAll("mybar")
+		.data(userData.xpByProject)
+		.enter()
+		.append("rect")
+		.attr("x", function (d) {
+			return x(d.project);
+		})
+		.attr("y", function (d) {
+			return y(d.xp);
+		})
+		.attr("width", x.bandwidth())
+		.attr("height", function (d) {
+			return height - y(d.xp);
+		})
+		.attr("fill", "#0b7dda");
+};
   
-  
-
-
-
-
-
-
-
-
 
 
 
@@ -344,4 +418,4 @@ export async function completedTasks(username) {
   
       //getID();
     //   getStat();
-      completedTasks();
+      //completedTasks();
