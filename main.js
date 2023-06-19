@@ -1,125 +1,137 @@
 import { queryFetch } from './fetch.js';
 import { div01CompletedTasksID, div01TaskXP } from "./queries.js";
 
-
-//await drawData()
-// const uid = data1
-
-export function init() {
+export function loadUserData() {
     // get basic user data
-    getID();
-    //drawData()
-    //getStat()
+    getStats();
 
 
   
-    // add id fetch callback
-      //resetUX()
-      //clearGraph()
-      //getUserData()
-      //this.focus()
+
 
   }
 
-  async function getID() {
-    const currentUser = `
-    query {
-        user {
-            id
-            login
+  async function getStats() {
+    const Data = `
+    query{
+      user {
+        id
+        login
+        campus
+        lastName
+        firstName
+        email
+        totalUp
+        totalDown
+        auditRatio
+      }
+      audits: transaction(order_by: {createdAt: asc}, where: {type: {_regex: "up|down"}}){
+        type
+        amount
+        path
+        createdAt
+      }
+      xp: transaction(order_by: {createdAt: asc}, where: {
+        type: {_eq: "xp"}
+        eventId: {_eq: 20}
+      }){
+        createdAt
+        amount
+        path
+      }
+      skills: transaction(order_by: {createdAt: asc}, where: {
+        eventId: {_eq: 20}
+      }) {
+        type
+        amount
+        path
+      }
+      xpJS: transaction(order_by: {createdAt: asc}, where: {
+        type: {_eq: "xp"}
+        eventId: {_eq: 37}
+      }) {
+        createdAt
+        amount
+        path
+      }
+      xpGo: transaction(order_by: {createdAt: asc}, where: {
+        type: {_eq: "xp"}
+        eventId: {_eq: 2}
+      }){
+        createdAt
+        amount
+        path
+      }
+      xpTotal: transaction_aggregate(
+        where: {
+          type: {_eq: "xp"}
+          eventId: {_eq: 20}
         }
+      ) {aggregate {sum {amount}}}
+      xpJsTotal: transaction_aggregate(
+        where: {
+          type: {_eq: "xp"}
+          eventId: {_eq: 37}
+        }
+      ) {aggregate {sum {amount}}}
+      xpGoTotal: transaction_aggregate(
+        where: {
+          type: {_eq: "xp"}
+          eventId: {_eq: 2}
+        }
+      ) {aggregate {sum {amount}}}
     }
 `;
-    const div01CompletedTasksID = `
-      query {
-        progress {
-          object {
-            id
-          }
-        }
-      }
-    `;
-  
     try {
-      const currentUserResult = await queryFetch(currentUser);
-      const userLogin = currentUserResult.user[0]; // Extract the login name from the query result
-      const taskID = await queryFetch(div01CompletedTasksID);
-      const response = await div01TaskXP(userLogin, taskID);
-      console.log(response);
-  
-      if (currentUserResult.errors) {
-        throw new Error(currentUserResult.errors[0].message);
+      const data = await queryFetch(Data);
+      if (data.errors) {
+        throw new Error(data.errors[0].message);
       }
   
-      const user = currentUserResult.user[0];
+      const user = data.user[0];
       const userWelcomeElement = document.querySelector('#user-welcome');
       userWelcomeElement.innerHTML = `
         <p>Welcome, ${user.login}!</p>
-        <p>Your school ID is ${user.id}.</p>
+        <p>Campus location: ${user.campus}.</p>
+        <p>Your email is ${user.email}.</p>
+        <p>XP given: ${user.totalUp}, \n XP gained ${user.totalDown}. Audit Ratio: ${user.auditRatio}</p>
+  
+
       `;
   
       const titleElement = document.querySelector('#Title');
       titleElement.innerHTML = `
-        <h3>Progress report for ${user.login}<h3>
+        <h3>Progress report for ${user.firstName} ${user.lastName}<h3>
       `;
   
-      const taskIDResult = await div01CompletedTasksID;
+      // const taskIDResult = await div01CompletedTasksID;
   
-      if (taskIDResult.errors) {
-        throw new Error(taskIDResult.errors[0].message);
-      }
-  
-      const taskIDs = taskIDResult.data.progress.map(task => task.object.id);
-  
-      for (const taskID of taskIDs) {
-        const div01TaskXPResult = await div01TaskXP(user.login, taskID);
-        if (div01TaskXPResult.errors) {
-          throw new Error(div01TaskXPResult.errors[0].message);
-        }
-        const task = div01TaskXPResult.transaction[0];
-        const taskElement = document.createElement('li');
-        taskElement.textContent = `${task.object.name} - ${task.amount} XP`;
-        const taskListElement = document.querySelector('#task-list');
-        taskListElement.appendChild(taskElement);
-      }
-  
-      // Pass the transactions array to getStat function
-      //getStat(user.transactions, user.login, user.id);
-      getData(user.login, userData);
-      drawData(user.login, user.id);
-      //getStat(user.transactions, user.login, user.id);
+      // if (taskIDResult.errors) {
+      //   throw new Error(taskIDResult.errors[0].message);
+      // }
+      // Pass the transactions array to drawData function
+      drawData(user.login, user.firstName + " " + user.lastName, user.totalXp);
     } catch (error) {
       console.error(error);
       const errorMessageElement = document.querySelector('#error-message');
       errorMessageElement.textContent = error.message;
     }
+    
   }
-  
   
   
 
-  //example of how to use the data
-  function getStat(transactions, login, id) {
-    //Do something with the transactions, login, and id
-    //console.log(transactions);
-    console.log(login);
-    console.log(id);
-    // console.log('Function 1:');
-    // console.log(loginName);
-    // console.log(userID);
-  }
+
+  
+
+
 
 export async function drawData(login, id) {
-	// let loading = document.getElementById("loading");
-	// let loader = document.createElement("div");
-	// loader.classList.add("loader");
-	// loading.appendChild(loader);
-	//await getData(login);
-
+  
 	let infoBoxes = document.getElementById("infoBoxes");
 	let usernameBox = document.createElement("div");
 	usernameBox.classList.add("box");
-	usernameBox.innerText = "Username: " + login + "\n" + "ID: " + id;
+	usernameBox.innerText = "Username: " + login + "\n" + "Name: " + id;
 	infoBoxes.appendChild(usernameBox);
 
 	let xpBox = document.createElement("div");
@@ -158,76 +170,71 @@ function levelNeededXP(level) {
 	return Math.round(level * (176 + 3 * level * (47 + 11 * level)));
 }
 
-// const user = currentUserResult.user[0];
-// const userWelcomeElement = document.querySelector('#user-welcome');
-// userWelcomeElement.innerHTML = `
-//   <p>Welcome, ${user.login}!</p>
-//   <p>Your school ID is ${user.id}.</p>
-// `;
 
 
-let getData = async (login, userData) => {
-  try {
-    let response = await div01CompletedTasksID();
-    console.log('Completed Tasks Response:', response); // Log the response object for debugging purposes
 
-    if (!response || !response.progress || response.progress.length === 0) {
-      console.error('Invalid response data:', response); // Log the response data for debugging purposes
-      throw new Error('Invalid response data');
-    }
+// let getData = async (login, userData) => {
+//   try {
+//     let response = await getStats();
+//     console.log('Completed Tasks Response:', response); // Log the response object for debugging purposes
 
-    const progress = response.progress;
-    console.log('Progress:', progress); // Log the progress array for debugging purposes
+//     if (!response || !response.progress || response.progress.length === 0) {
+//       console.error('Invalid response data:', response); // Log the response data for debugging purposes
+//       throw new Error('Invalid response data');
+//     }
 
-    const completedTasks = progress.map(task => task.object.id);
-    console.log('Completed Tasks:', completedTasks); // Log the completed tasks array for debugging purposes
+//     const progress = response.progress;
+//     console.log('Progress:', progress); // Log the progress array for debugging purposes
 
-    for (let completedTask of completedTasks) {
-      const taskID = completedTask;
-      response = await div01TaskXP(login, taskID);
-      console.log('Task XP Response:', response); // Log the response object for debugging purposes
+//     const completedTasks = progress.map(task => task.object.id);
+//     console.log('Completed Tasks:', completedTasks); // Log the completed tasks array for debugging purposes
 
-      if (
-        !response.data ||
-        !response.data.user ||
-        !response.data.user[0].transactions ||
-        response.data.user[0].transactions.length === 0
-      ) {
-        throw new Error('Invalid response data');
-      }
+//     for (let completedTask of completedTasks) {
+//       const taskID = completedTask;
+//       response = await div01TaskXP(login, taskID);
+//       console.log('Task XP Response:', response); // Log the response object for debugging purposes
 
-      userData.xpAndDate.push({
-        xp: response.data.user[0].transactions[0].amount,
-        date: new Date(
-          response.data.user[0].transactions[0].createdAt.substr(0, 10)
-        ),
-      });
+//       if (
+//         !response.data ||
+//         !response.data.user ||
+//         !response.data.user[0].transactions ||
+//         response.data.user[0].transactions.length === 0
+//       ) {
+//         throw new Error('Invalid response data');
+//       }
 
-      userData.xpByProject.push({
-        xp: response.data.user[0].transactions[0].amount,
-        project: response.data.user[0].transactions[0].object.name,
-        date: new Date(
-          response.data.user[0].transactions[0].createdAt.substr(0, 10)
-        ),
-      });
+//       userData.xpAndDate.push({
+//         xp: response.data.user[0].transactions[0].amount,
+//         date: new Date(
+//           response.data.user[0].transactions[0].createdAt.substr(0, 10)
+//         ),
+//       });
 
-      const taskXP = response.data.user[0].transactions[0].amount;
-      userData.totalXp += taskXP;
-    }
+//       userData.xpByProject.push({
+//         xp: response.data.user[0].transactions[0].amount,
+//         project: response.data.user[0].transactions[0].object.name,
+//         date: new Date(
+//           response.data.user[0].transactions[0].createdAt.substr(0, 10)
+//         ),
+//       });
 
-    userData.xpAndDate.sort((a, b) => a.date - b.date);
-    userData.xpByProject.sort((a, b) => a.date - b.date);
-    let lastXp = 0;
-    userData.xpAndDate.forEach((task) => {
-      task.xp += lastXp;
-      lastXp = task.xp;
-    });
-  } catch (error) {
-    console.error(error);
-    const errorMessageElement = document.querySelector('#error-message');
-    errorMessageElement.textContent = error.message;
-  }
-};
+//       const taskXP = response.data.user[0].transactions[0].amount;
+//       userData.totalXp += taskXP;
+//     }
+
+//     userData.xpAndDate.sort((a, b) => a.date - b.date);
+//     userData.xpByProject.sort((a, b) => a.date - b.date);
+//     let lastXp = 0;
+//     userData.xpAndDate.forEach((task) => {
+//       task.xp += lastXp;
+//       lastXp = task.xp;
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     const errorMessageElement = document.querySelector('#error-message');
+//     errorMessageElement.textContent = error.message;
+//   }
+// };
 
 
 
