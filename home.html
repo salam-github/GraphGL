@@ -9,9 +9,9 @@
 
 
 
-  <script src="https://cdn.plot.ly/plotly-2.20.0.min.js" charset="utf-8"></script>
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- <script src="https://cdn.plot.ly/plotly-2.20.0.min.js" charset="utf-8"></script> -->
+  <!-- <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script> -->
+  <script src="https://d3js.org/d3.v6.min.js"></script>
 
 </head>
 <body>
@@ -21,6 +21,10 @@
   <br/>
 	<div id="error-message" style="color: red;"></div>
   <canvas id="myChart"></canvas>
+  <p>Your audit ratio</p>
+  <div id="chart-container"></div>
+  <p>skills</p>
+  <div id="chart" ></div>
 
   <br/>
   <div id="charts"></div>
@@ -41,7 +45,7 @@
 
 	<button id="logout-btn">Logout</button>
   <script type="module" >
-    import{ loadUserData }from './main.js';
+    import{ loadUserData }from './main1.js';
     loadUserData();
 
   </script>

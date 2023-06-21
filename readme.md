@@ -69,3 +69,16 @@ When making GraphQL queries, you'll supply the **JWT** using **Bearer** authenti
         }
 
 
+skill_css
+skill_front-end
+skill_html
+skill_js
+skill_go
+skill_tcp
+skill_unix
+skill_back-end
+skill_docker
+skill_sql
+skill_sys-admin
+skill_game
+skill_algo

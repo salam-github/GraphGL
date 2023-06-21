@@ -47,3 +47,78 @@ export async function div01CompletedTasksID() {
   
     
   }
+
+  export async function getQuery() {
+    const query = `
+    query{
+      user {
+        id
+        login
+        campus
+        lastName
+        firstName
+        email
+        totalUp
+        totalDown
+        auditRatio
+      }
+      audits: transaction(order_by: {createdAt: asc}, where: {type: {_regex: "up|down"}}){
+        type
+        amount
+        path
+        createdAt
+      }
+      xp: transaction(order_by: {createdAt: asc}, where: {
+        type: {_eq: "xp"}
+        eventId: {_eq: 20}
+      }){
+        createdAt
+        amount
+        path
+      }
+      skills: transaction(order_by: {createdAt: asc}, where: {
+        eventId: {_eq: 20}
+      }) {
+        type
+        amount
+        path
+      }
+      xpJS: transaction(order_by: {createdAt: asc}, where: {
+        type: {_eq: "xp"}
+        eventId: {_eq: 37}
+      }) {
+        createdAt
+        amount
+        path
+      }
+      xpGo: transaction(order_by: {createdAt: asc}, where: {
+        type: {_eq: "xp"}
+        eventId: {_eq: 2}
+      }){
+        createdAt
+        amount
+        path
+      }
+      xpTotal: transaction_aggregate(
+        where: {
+          type: {_eq: "xp"}
+          eventId: {_eq: 20}
+        }
+      ) {aggregate {sum {amount}}}
+      xpJsTotal: transaction_aggregate(
+        where: {
+          type: {_eq: "xp"}
+          eventId: {_eq: 37}
+        }
+      ) {aggregate {sum {amount}}}
+      xpGoTotal: transaction_aggregate(
+        where: {
+          type: {_eq: "xp"}
+          eventId: {_eq: 2}
+        }
+      ) {aggregate {sum {amount}}}
+    }
+`;
+    const data = await queryFetch(query);
+    return data;
+  }
