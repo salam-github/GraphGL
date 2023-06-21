@@ -281,7 +281,7 @@ function drawHorizontalBarChart(skills) {
 		  .attr("transform", `translate(${arc.centroid(d)[0] * 0.1},${arc.centroid(d)[1] * 0.1})`)
 		  .attr("fill", "yellow");
 	  
-		const hoverText = d.data ? (d.data.type === "given" ? "The amount of xp you have given to others during audits" : "The amount of xp you have gained from others during your audits") : "";
+		const hoverText = d.data ? (d.data.type === "given" ? "The Percentage of xp you have given to others during audits" : "The Percentage of xp you have gained from others during your audits") : "";
 		const text = svg.append("text")
 		  .attr("class", "hover-text")
 		  .attr("text-anchor", "middle")
@@ -372,7 +372,8 @@ function drawHorizontalBarChart(skills) {
 	const height = 400 - margin.top - margin.bottom;
   
 	// Creating SVG element
-	const svg = d3.select("#chart-container")
+	const svg = d3
+	  .select("#chart-line")
 	  .append("svg")
 	  .attr("width", width + margin.left + margin.right)
 	  .attr("height", height + margin.top + margin.bottom)
@@ -401,6 +402,29 @@ function drawHorizontalBarChart(skills) {
 	  .attr("stroke-width", 1.5)
 	  .attr("d", line);
   
+	// Adding the circle data points with tooltips
+	svg.selectAll("circle")
+	  .data(data)
+	  .enter()
+	  .append("circle")
+	  .attr("cx", d => xScale(d.date))
+	  .attr("cy", d => yScale(d.amount))
+	  .attr("r", 4)
+	  .attr("fill", "steelblue")
+	  .on("mouseover", (event, d) => {
+		// Show tooltip on mouseover
+		const tooltip = svg.append("text")
+		  .attr("class", "tooltip")
+		  .attr("x", xScale(d.date) + 10)
+		  .attr("y", yScale(d.amount) - 10)
+		  .text(`Date: ${d.date.toISOString().split("T")[0]}\nXP: ${d.amount}`)
+		  .attr("fill", "black");
+	  })
+	  .on("mouseout", (event, d) => {
+		// Remove tooltip on mouseout
+		svg.select(".tooltip").remove();
+	  });
+  
 	// Adding the x-axis
 	svg.append("g")
 	  .attr("transform", "translate(0," + height + ")")
@@ -421,6 +445,8 @@ function drawHorizontalBarChart(skills) {
 	  .attr("transform", "translate(" + (-margin.left + 20) + "," + (height / 2) + ")rotate(-90)")
 	  .text("XP Amount");
   }
+  
+  
   
   // Assuming the variable 'audits' contains the data
 //   const xpData = audits.filter(audit => audit.path.startsWith("/gritlab/school-curriculum/"));
