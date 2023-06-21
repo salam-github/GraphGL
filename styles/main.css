@@ -179,3 +179,15 @@
   .text--center {
     text-align: center;
   }
+
+  path:hover {
+    transform: translate(0, -5px); /* Move the slice 5 pixels up on hover */
+    transition: transform 0.3s ease; /* Add a smooth transition */
+  }
+  
+  path:active {
+    transform: translate(0, 0); /* Reset the transform on mouse click */
+  }
+  ::backdrop{
+    fill: rgb(red, green, blue);
+  }
