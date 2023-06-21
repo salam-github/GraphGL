@@ -403,6 +403,19 @@ function drawHorizontalBarChart(skills) {
 	  .attr("d", line);
   
 	// Adding the circle data points with tooltips
+	const tooltip = d3.select("#chart-line")
+	  .append("div")
+	  .attr("class", "tooltip")
+	  .style("position", "relative")
+	  .style("left", "50%")
+	  .style("transform", "translateX(-50%)")
+	  .style("bottom", "10px")
+	  .style("background-color", "rgba(0, 0, 0, 0.8)")
+	  .style("color", "#fff")
+	  .style("padding", "5px")
+	  .style("border-radius", "4px")
+	  .style("opacity", 0);
+  
 	svg.selectAll("circle")
 	  .data(data)
 	  .enter()
@@ -413,16 +426,12 @@ function drawHorizontalBarChart(skills) {
 	  .attr("fill", "steelblue")
 	  .on("mouseover", (event, d) => {
 		// Show tooltip on mouseover
-		const tooltip = svg.append("text")
-		  .attr("class", "tooltip")
-		  .attr("x", xScale(d.date) + 10)
-		  .attr("y", yScale(d.amount) - 10)
-		  .text(`Date: ${d.date.toISOString().split("T")[0]}\nXP: ${d.amount}`)
-		  .attr("fill", "black");
+		tooltip.style("opacity", 1)
+		  .html(`Date: ${d.date.toISOString().split("T")[0]}<br>XP: ${d.amount}`);
 	  })
 	  .on("mouseout", (event, d) => {
-		// Remove tooltip on mouseout
-		svg.select(".tooltip").remove();
+		// Hide tooltip on mouseout
+		tooltip.style("opacity", 0);
 	  });
   
 	// Adding the x-axis
