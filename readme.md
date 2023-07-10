@@ -14,7 +14,7 @@
 
 -----------------
 ## How to run 
-here is a link to the app: (`https://(((DOMAIN))).herokuapp.com/`)
+here is a link to the aaapp: (`https://(((DOMAIN))).herokuapp.com/`)
 
 
 -----------------
