@@ -12,6 +12,8 @@
   <!-- <script src="https://cdn.plot.ly/plotly-2.20.0.min.js" charset="utf-8"></script> -->
   <!-- <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script> -->
   <script src="https://d3js.org/d3.v6.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
+
 
 </head>
 <body>
@@ -20,11 +22,11 @@
   <div id="user-xp"></div>
   <br/>
 	<div id="error-message" style="color: red;"></div>
-  <canvas id="myChart"></canvas>
-  <p>Your audit ratio</p>
+  <p id="audit">Your audit ratio</p>
   <div id="chart-container"></div>
-  <p>skills</p>
+  <p id="skills">Skills</p>
   <div id="chart" ></div>
+  <p id="line">XP overTime</p>
   <div id="chart-line" ></div>
 
   <br/>
@@ -46,7 +48,7 @@
 
 	<button id="logout-btn">Logout</button>
   <script type="module" >
-    import{ loadUserData }from './main1.js';
+    import{ loadUserData }from './main.js';
     loadUserData();
 
   </script>

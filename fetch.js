@@ -67,18 +67,3 @@ function getToken() {
     return result.data;
   }
   
-  
-  
-
-// https://01.gritlab.ax/api/auth/signin
-
-// Define your GraphQL query
-
-// } catch (error) {
-//   console.error(error);
-//   const errorMessageElement = document.querySelector('#error-message');
-//   errorMessageElement.textContent = error.message;
-// }
-
-// const limit = 50;
-// const fetchUrl = 'https://01.gritlab.ax/api/graphql-engine/v1/graphql';

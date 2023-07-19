@@ -26,27 +26,7 @@ export async function div01CompletedTasksID() {
     }
   }
   
-  
 
-  export async function div01TaskXP(user, taskID) {
-    const query = `
-      query getDiv01TaskXP {
-        user {
-          transaction {
-            amount
-            createdAt
-            object {
-              name
-            }
-          }
-        }
-      }
-    `;
-  
-
-  
-    
-  }
 
   export async function getQuery() {
     const query = `
