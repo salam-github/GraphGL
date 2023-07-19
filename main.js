@@ -2,15 +2,10 @@ import { queryFetch } from './fetch.js';
 import { div01CompletedTasksID, getQuery } from "./queries.js";
 
 export function loadUserData() {
-    // get basic user data
      getStats();
-	//getData();
-
-
-  
-
-
   }
+
+
 // this function is called when the page is loaded and it calls the getStats function to get the user data
   async function getStats() {
     const Data = `
@@ -88,21 +83,34 @@ export function loadUserData() {
       if (data.errors) {
         throw new Error(data.errors[0].message);
       }
-	  console.log('allll the Dataaaa:', data);
+	  //console.log('allll the Dataaaa:', data);
 
 
 
   
       const user = data.user[0];
       const userWelcomeElement = document.querySelector('#user-welcome');
-      userWelcomeElement.innerHTML = `
-        <p>Welcome, ${user.login}!</p>
-        <p>Campus location: ${user.campus}.</p>
-        <p>Your email is ${user.email}.</p>
-        <p>XP given: ${user.totalUp}, \n XP gained ${user.totalDown}. Audit Ratio: ${user.auditRatio}</p>
-  
 
-      `;
+	  // Calculate the audit ratio with two decimal places
+	const auditRatioFormatted = user.auditRatio.toFixed(1);
+
+	// Determine if the audit ratio is positive or negative
+	const isNegativeRatio = user.auditRatio >= 0.1 && user.auditRatio <= 0.9;
+
+	let auditRatioText;
+	if (isNegativeRatio) {
+ 	 auditRatioText = `Negative Audit Ratio, You can do better: ${auditRatioFormatted}`;
+	} else {
+  	auditRatioText = `Positive Audit Ratio, Good Job!: <p id="audit-ratio">${auditRatioFormatted}<p>`;
+	}
+
+	userWelcomeElement.innerHTML = `
+  	<p>Welcome, ${user.login}!</p>
+  	<p>Campus location: ${user.campus}.</p>
+  	<p>Your email is ${user.email}.</p>
+  	<p> ${auditRatioText}</p>
+		`;
+
   
       const titleElement = document.querySelector('#Title');
       titleElement.innerHTML = `
@@ -447,12 +455,11 @@ function drawHorizontalBarChart(skills) {
 
 
 function drawLevel(Level){
-
+	const levelElement = document.querySelector('#level');
+	levelElement.innerHTML = `
+	<p>Level: ${Level}<p>
+	`;
 }
-
-const xpByProjectChart = (_) => {
-	
-};
   
 
 
