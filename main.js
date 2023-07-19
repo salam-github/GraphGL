@@ -481,6 +481,6 @@ const xpByProjectChart = (_) => {
           } finally {
                 document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
               localStorage.removeItem('token');
-              window.location.assign('login.html');
+              window.location.assign('index.html');
           }
   }

@@ -20,7 +20,7 @@ rect {
 }
 
 rect:hover {
-  fill: rgb(116, 181, 230); /* Change the fill color on hover */
+  fill: #ea4c88; /* Change the fill color on hover */
 }
   
 #infoBox {
@@ -254,27 +254,3 @@ rect:hover {
     transform: translate(0, 0); /* Reset the transform on mouse click */
   }
 
-  /* Styles for the tooltip */
-.tooltip {
-  position: absolute;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  padding: 8px;
-  border-radius: 4px;
-  pointer-events: none; /* Ensure the tooltip does not interfere with data points */
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out;
-}
-
-/* Adjust the tooltip position to appear below the graph */
-.tooltip {
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-/* Show the tooltip on hover */
-circle.data-point:hover ~ .tooltip {
-  opacity: 1;
-}
-  
