@@ -26,7 +26,7 @@ loginForm.addEventListener('submit', async (event) => {
   
       // Redirect to home page and store cookie
       const homeUrl = 'https://salam-github.github.io/GraphGL/home.html';
-      const url = new URL(homeUrl, window.location.origin);
+      const url = new URL(homeUrl);
       url.searchParams.set('token', data.token);
       window.location.href = url.toString();
   } else {
@@ -37,4 +37,3 @@ loginForm.addEventListener('submit', async (event) => {
       message.innerHTML = error.message;
     }
   });
-  
