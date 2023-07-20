@@ -25,7 +25,7 @@ loginForm.addEventListener('submit', async (event) => {
       localStorage.setItem('token', data);
   
       // Redirect to home page and store cookie
-      const homeUrl = 'https://salam-github.github.io/graphs.html?';
+      const homeUrl = 'home.html';
       const url = new URL(homeUrl, window.location.origin);
       url.searchParams.set('token', data.token);
       window.location.href = url.toString();
