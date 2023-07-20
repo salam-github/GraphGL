@@ -144,6 +144,7 @@ export function loadUserData() {
 }
 
 function drawHorizontalBarChart(skills) {
+	//skills we want to show data on
 	const selectedSkills = [
 	  "skill_css",
 	  "skill_front-end",
@@ -214,7 +215,7 @@ function drawHorizontalBarChart(skills) {
 	  const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
 	  label.setAttribute("x", 10 + barLength + 5); // Adjust the label position here
 	  label.setAttribute("y", index * (barHeight + barPadding) + barHeight / 2);
-	  label.setAttribute("fill", "black");
+	  label.setAttribute("fill", "white");
 	  label.setAttribute("text-anchor", "start");
 	  label.setAttribute("alignment-baseline", "middle");
 	  label.textContent = datum.type.replace(/_/g, " " + "").replace("skill", "");
